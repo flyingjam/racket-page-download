@@ -15,11 +15,11 @@
 (struct tag(
             (name : String)
             (content : String)
-            (attr : (Listof (Pair String String)))
+            (attr : (Listof (Pair String Any)))
             (child : (Listof tag))))
 
 ;;Function (with default arguments) for creating a tag struct
-(: tag-init (->* (String) (String (Listof (Pair String String)) (Listof tag)) tag))
+(: tag-init (->* (String) (String (Listof (Pair String Any)) (Listof tag)) tag))
 (define tag-init
   (case-lambda
     ((name) (tag name "" '() '()))
@@ -40,13 +40,4 @@
         [(not (null? (tag-child x)))
          `("\n""<",(tag-name x)">",(tag-content x),(string-join (map prettify (tag-child x)))"</",(tag-name x)">\n")]
         [else (list (tag->string x))]) "")))
-
-;;Helper functions for "psuedo" dictionaries with lists of pairs
-(: dict-get (-> (Listof (Pair String String)) String (Listof String)))
-(define (dict-get dict key)
-  (map (lambda ([a : (Pair String String)])
-         (cdr a))
-         (filter (lambda([x : (Pair String String)])
-            (equal? (car x) key)) dict)))
-
 

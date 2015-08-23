@@ -2,12 +2,12 @@
 
 (require net/url)
 (require sxml/html)
-
+(require racket/match)
 (require "html-wrap.rkt")
 
 (provide html-string->tag)
 (provide download-page)
-
+(provide dict)
 ;;Wrapper around racket url procedure. Reads in page as string.
 ;;Shamelessly stolen from a stackoverflow answer
 (define (urlopen url)
@@ -33,14 +33,13 @@
     (symbol->string (car sexp))))
 
 ;;Returns a "psuedo" dictionary of all attributes in tags
-(define (sexp->attrs thing)
-  (when (not (null? thing))
-  (map (lambda (x)
-         `(,(symbol->string (car x)) . ,(cdr x)))
-    (cdr (car (filter (lambda (x)
-            (if (list? x)
-              (equal? (car x) '@)
-              #f)) thing))))))
+(define (sexp->attrs sexp)
+  (define-values (a-tag) (filter (lambda (x)
+            (if (list? x) (equal? (car x) '@) #f)) sexp))
+  (cond
+    [(null? a-tag) '()]
+    [else (map (lambda (x)
+                  `(,(symbol->string (car x)) . ,(cdr x))) (cdr (car a-tag)))]))
 
 ;;Test if there is a nested list inside the sexp
 (define (nested-list? sexp)
@@ -65,4 +64,7 @@
   (html-string->tag
     (urlopen url)))
 
-
+(define (dict key d)
+  (map (lambda (x) (cadr x))
+       (filter (lambda (x)
+            (equal? (car x) key)) d)))
