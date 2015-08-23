@@ -17,6 +17,7 @@
   </body>
   </html>")
 
-(define proc (download-page 
-               "http://www.baka-tsuki.org/project/index.php?title=Rakudai_Kishi_no_Eiyuutan:Volume1_Prologue"))
+;(define proc (download-page "http://www.baka-tsuki.org/project/index.php?title=Rakudai_Kishi_no_Eiyuutan:Volume1_Prologue"))
+(define proc (html-string->tag example))
 (display (prettify proc))
+

@@ -32,6 +32,16 @@
   (when (list? sexp)
     (symbol->string (car sexp))))
 
+;;Returns a "psuedo" dictionary of all attributes in tags
+(define (sexp->attrs thing)
+  (when (not (null? thing))
+  (map (lambda (x)
+         `(,(symbol->string (car x)) . ,(cdr x)))
+    (cdr (car (filter (lambda (x)
+            (if (list? x)
+              (equal? (car x) '@)
+              #f)) thing))))))
+
 ;;Test if there is a nested list inside the sexp
 (define (nested-list? sexp)
   (ormap list? sexp))
@@ -39,7 +49,7 @@
 ;;Converts a sexp structure into a tag structure
 (define (sexp->tag sexp)
   (when (list? sexp)
-    (tag-init (sexp->name sexp) (sexp->string sexp) '() 
+    (tag-init (sexp->name sexp) (sexp->string sexp) (sexp->attrs sexp)
               (filter (lambda (x)
                         (tag? x)) (map sexp->tag sexp)))))
 
@@ -54,4 +64,5 @@
 (define (download-page url)
   (html-string->tag
     (urlopen url)))
+
 
